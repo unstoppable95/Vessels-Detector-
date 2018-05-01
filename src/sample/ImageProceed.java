@@ -6,6 +6,7 @@ import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,11 +30,29 @@ public class ImageProceed {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
+    public static Mat changeBright(Mat mG ){
+        for (int i = 0 ; i<mG.rows() ; i++){
+            for (int j =0 ; j< mG.cols() ; j++){
+                double [] pom = mG.get(i,j);
+
+                for (int k = 0; k < mG.channels(); k++)
+                {
+                    pom[k] = pom[k] * 0.6;
+                }
+                mG.put(i,j,pom);
+            }
+        }
+
+        return  mG;
+    }
+
+
+
     public void process ()
 
     {
         //create image as Mat
-        Mat gray= new Mat();
+        Mat end= new Mat();
         Mat imageCny = new Mat();
         Mat dst = new Mat();
         Mat dilate = new Mat();
@@ -43,15 +62,17 @@ public class ImageProceed {
         List<Mat> lRgb = new ArrayList<Mat>(3);
         Core.split(imageToProceed, lRgb);
         Mat mG = lRgb.get(1);
-        imwrite("C://Users//Piotr//Dysk Google//SEMESTR 6//Informatyka_w_medycynie//Lab//Vessels_Detector//Results//zapisaneGreenChannel.bmp", mG);
 
-        //Imgproc.cvtColor(mG,gray,Imgproc.COLOR_BGR2GRAY);
+        mG=changeBright(mG);
 
+        imwrite("C://Users//Piotr//Dysk Google//SEMESTR 6//Informatyka_w_medycynie//Lab//Vessels_Detector//Results//Green.bmp", mG);
+
+/*
         //filtr Gausa
         Imgproc.GaussianBlur(mG, dst, new Size(5, 5), 3, 3);
 
         //convert to alpha - contrast ; beta - brightness
-        dst.convertTo(dst, -1, 3.0, 50.0);
+       // dst.convertTo(dst, -1, 3.0, 50.0);
 
         //canny
         Imgproc.Canny(dst, imageCny, 10, 100, 3, true);
@@ -60,16 +81,27 @@ public class ImageProceed {
         //Dylatacja
         Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(9, 9));
         Imgproc.dilate(imageCny, dilate, kernel);
+*/
 
+        //canny
+        Imgproc.Canny(mG, imageCny, 150, 255, 5, true);
+        imwrite("C://Users//Piotr//Dysk Google//SEMESTR 6//Informatyka_w_medycynie//Lab//Vessels_Detector//Results//Canny.bmp", imageCny);
+
+        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3, 3));
+        Imgproc.dilate(imageCny, dilate, kernel);
+
+        Imgproc.medianBlur(dilate,dst,3);
+
+        dilate = new Mat();
+        kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(9, 9));
+        Imgproc.dilate(dst, end, kernel);
+
+        //Imgproc.GaussianBlur(dilate, end, new Size(9, 9), 5, 5);
+        //Imgproc.medianBlur(dilate,end,15);
+
+        //result file save
         String save = ".\\Results\\" + filename.getName().split("\\.")[0] + ".bmp";
-        System.out.println(save);
-        imwrite(save, dilate);
-
-
-
-
-
-
+        imwrite(save, end);
 
 
 
