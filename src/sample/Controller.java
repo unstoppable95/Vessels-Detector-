@@ -62,7 +62,7 @@ public class Controller {
     public void proceed (ActionEvent event){
         Mat image1 = Imgcodecs.imread(fileName.getPath());
         ImageProceed myImage = new ImageProceed(image1,fileName);
-        myImage.process();
+        myImage.process(fileExpert);
 
         fileResult= Menager.fileResult(fileName);
         BufferedImage image =null;
