@@ -45,7 +45,6 @@ public class ImageProceed {
                 mG.put(i,j,pom);
             }
         }
-
         return  mG;
     }
 
@@ -118,24 +117,30 @@ public class ImageProceed {
     }
 
     public void makeLearningInstance(Mat image, Mat expertMask){
-        for(int i=0; i<image.rows(); i+=5){
-            for(int j=0; j<image.cols(); j+=5) {
-                //make small 5x5pxl square
-                Mat tmp = new Mat();
-                for (int x=0;x<5;x++){
-                    for(int y=0; y<5; y++) {
-                        tmp.put(x, y, image.get(i+x,j+y));
-                    }
-                }
-                Mat avg=Mat.zeros(2,1,CvType.CV_64FC1);
-                Mat cov = Mat.zeros(2,2,CvType.CV_64FC1);
-                Core.calcCovarMatrix(tmp,cov,avg,Core.COVAR_COLS);
 
-                System.out.println("\n\nCOVAR: "+cov.channels()+"   MEAN: "+avg.channels());
-                //!!!!!!!!!!!!!!!!double huMoments[] = Imgproc.HuMoments(Imgproc.moments(tmp),tmp);
-                //Imgproc.HuMoments();
+
+            Mat image2=new Mat();
+            Imgproc.cvtColor(image, image2, Imgproc.COLOR_BGR2GRAY);
+            for(int i=0; i<image.rows()-5; i+=5){
+                for(int j=0; j<image.cols()-5; j+=5) {
+                    //make small 5x5pxl square
+                    Mat tmp = new Mat();
+                    for (int x=0;x<5;x++){
+                        for(int y=0; y<5; y++) {
+
+                            double [] tmp2 = image2.get(i+x,j+y);
+
+                            tmp.put(x, y, tmp2);
+                        }
+                    }
+
+
+                    String name = ".\\Results\\"+ "tmpI"+i+"J"+j+".bmp" ;
+                    imwrite(name, tmp);
+
+                }
             }
-        }
+
 
     }
 
@@ -182,7 +187,7 @@ public class ImageProceed {
 
         Imgproc.medianBlur(dilate,dst,3);
 
-        dilate = new Mat();
+        //dilate = new Mat();
         kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(9, 9));
         Imgproc.dilate(dst, end, kernel);
 
@@ -194,8 +199,7 @@ public class ImageProceed {
         imwrite(save, end);
 
 
-       // Mat imageExpert = new Mat();
-        //System.out.println("FILEEXPERT: "+fileExpert);
+        //statystyki i maszine learning
         Mat imageExpert = Imgcodecs.imread(fileExpert.getPath());
 
         double statistic[]=new double[3];
