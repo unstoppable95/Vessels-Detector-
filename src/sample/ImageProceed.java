@@ -1,17 +1,11 @@
 package sample;
 
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.Size;
+import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import org.opencv.imgproc.Moments;
 import java.io.File;
-import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +16,12 @@ public class ImageProceed {
 
     private Mat imageToProceed;
     private File filename;
+    private File fileExpert;
 
-    public ImageProceed(Mat image, File file){
+    public ImageProceed(Mat image, File file, File filex){
         this.imageToProceed=image;
         this.filename=file;
+        this.fileExpert=filex;
     }
 
 
@@ -76,16 +72,11 @@ public class ImageProceed {
         double fn=0.0;
         double fp=0.0;
         double tn=0.0;
-        //System.out.println("EKSPERT: col: "+imageExpert.cols()+" rows: "+imageExpert.rows());
-        //System.out.println("NASZ: col: "+image2.cols()+" rows: "+image2.rows());
-        //System.out.println("EKSPERT: "+imageExpert.channels());
-        //System.out.println("NASZ: "+image2.channels());
+
         for(int i=0; i<imageExpert.rows(); i++){
             for(int j=0; j<imageExpert.cols(); j++){
                 //checking confusion matrix
                 int channel = (int)image2.get(i,j)[0];
-                //System.out.println("XXX: "+checkArr(imageExpert.get(i,j)));
-                //String x=checkConfusionMartix(checkArr(imageExpert.get(i,j)), checkArr(image2.get(i,j)));
                 String x=checkConfusionMartix(checkArr(imageExpert.get(i,j)), channel); //1 -> 0/1    2 -> 0/255
                 if(x.equals("tp")) tp++;
                 if(x.equals("fn")) fn++;
@@ -115,36 +106,101 @@ public class ImageProceed {
         return result;
 
     }
+    public void startSave(PrintWriter out){
+
+            out.println("%");
+            out.println("@relation 'dataset'");
+            out.println("@attribute hu1 numeric");
+            out.println("@attribute hu2 numeric");
+            out.println("@attribute hu3 numeric");
+            out.println("@attribute hu4 numeric");
+            out.println("@attribute hu5 numeric");
+            out.println("@attribute hu6 numeric");
+            out.println("@attribute hu7 numeric");
+            out.println("@attribute centralMoment00 numeric");
+            out.println("@attribute centralMoment01 numeric");
+            out.println("@attribute centralMoment02 numeric");
+            out.println("@attribute centralMoment03 numeric");
+            out.println("@attribute centralMoment10 numeric");
+            out.println("@attribute centralMoment11 numeric");
+            out.println("@attribute centralMoment12 numeric");
+            out.println("@attribute centralMoment20 numeric");
+            out.println("@attribute centralMoment21 numeric");
+            out.println("@attribute centralMoment30 numeric");
+            ////COVARIANCE DIDNT ADDED
+            out.println("@attribute mean1 numeric");
+            out.println("@attribute mean2 numeric");
+            out.println("@attribute mean3 numeric");
+            out.println("@attribute mean4 numeric");
+            out.println("@attribute mean5 numeric");
+            out.println("@attribute isVessel {true,false}");
+            out.println("@data");
+
+    }
+
+
+    public void saveLine(PrintWriter out,Moments mom, Mat hu, Mat avg, Mat cov, int isVessel){
+        boolean isV;
+        if(isVessel==0) isV=false;
+        else isV=true;
+
+        out.println(hu.get(0, 0)[0] + "," + hu.get(1, 0)[0] + "," + hu.get(2, 0)[0] + "," + hu.get(3, 0)[0]
+                + "," + hu.get(4, 0)[0] + "," + hu.get(5, 0)[0] + "," + hu.get(6, 0)[0] + ","
+                + mom.m00 + "," + mom.m01 + "," + mom.m02 + "," + mom.m03 + "," + mom.m10 + "," +
+                mom.m11 + "," + mom.m12 + "," + mom.m20 + "," + mom.m21 + " " + mom.m30 + "," +
+                avg.get(0, 0)[0] + "," + avg.get(1, 0)[0] + ","
+                + avg.get(2, 0)[0] + "," + avg.get(3, 0)[0] + "," + avg.get(4, 0)[0] + "," + isV);
+
+        }
+
+
+
 
     public void makeLearningInstance(Mat image, Mat expertMask){
 
+    try {
+        PrintWriter out = new PrintWriter(".\\Results\\data.txt");
+        System.out.println("Zaczynam zapisywac");
+        startSave(out);
+        System.out.println("zapisalem wstep");
+        for (int i = 0; i < image.rows() - 5; i += 5) {
+            for (int j = 0; j < image.cols() - 5; j += 5) {
+                //make small 5x5pxl square
+                //  Mat tmp =new Mat(5,5,CvType.CV_8UC3 );
+                Mat tmp = new Mat(5, 5, CvType.CV_8U);
 
-            Mat image2=new Mat();
-            Imgproc.cvtColor(image, image2, Imgproc.COLOR_BGR2GRAY);
-            for(int i=0; i<image.rows()-5; i+=5){
-                for(int j=0; j<image.cols()-5; j+=5) {
-                    //make small 5x5pxl square
-                    Mat tmp = new Mat();
-                    for (int x=0;x<5;x++){
-                        for(int y=0; y<5; y++) {
+                for (int x = 0; x < 5; x++) {
+                    for (int y = 0; y < 5; y++) {
 
-                            double [] tmp2 = image2.get(i+x,j+y);
+                        double[] tmp2 = image.get(i + x, j + y);
 
-                            tmp.put(x, y, tmp2);
-                        }
+                        tmp.put(x, y, tmp2);
                     }
-
-
-                    String name = ".\\Results\\"+ "tmpI"+i+"J"+j+".bmp" ;
-                    imwrite(name, tmp);
-
                 }
+
+
+                //calculates Hu Moments and moments
+                Moments mom = Imgproc.moments(tmp);
+                Mat hu = new Mat();
+                Imgproc.HuMoments(mom, hu);
+
+                Mat avg = Mat.zeros(2, 1, CvType.CV_64FC1);
+                Mat cov = Mat.zeros(2, 2, CvType.CV_64FC1);
+                Core.calcCovarMatrix(tmp, cov, avg, Core.COVAR_COLS);
+
+                int isVessel = checkArr(expertMask.get(i, j));
+                saveLine(out,mom, hu, avg, cov, isVessel);
             }
+        }
+        System.out.println("DONE");
+        out.close();
+    }
+    catch (Exception ex ){}
 
 
     }
 
-    public void process (File fileExpert)
+    public void process ()
     {
         //create image as Mat
         Mat end= new Mat();
@@ -160,7 +216,7 @@ public class ImageProceed {
 
         mG=changeBright(mG);
 
-        imwrite("C://Users//Piotr//Dysk Google//SEMESTR 6//Informatyka_w_medycynie//Lab//Vessels_Detector//Results//Green.bmp", mG);
+        imwrite("C://Users//Piotr//Dysk Google//SEMESTR 6//Informatyka_w_medycynie//Lab//Vessels_Detector//Results//Green.jpg", mG);
 
 //
 //        //filtr Gausa
@@ -180,7 +236,7 @@ public class ImageProceed {
 
         //canny
         Imgproc.Canny(mG, imageCny, 150, 255, 5, true);
-        imwrite("C://Users//Piotr//Dysk Google//SEMESTR 6//Informatyka_w_medycynie//Lab//Vessels_Detector//Results//Canny.bmp", imageCny);
+        imwrite("C://Users//Piotr//Dysk Google//SEMESTR 6//Informatyka_w_medycynie//Lab//Vessels_Detector//Results//Canny.jpg", imageCny);
 
         Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3, 3));
         Imgproc.dilate(imageCny, dilate, kernel);
@@ -195,7 +251,7 @@ public class ImageProceed {
         //Imgproc.medianBlur(dilate,end,15);
 
         //result file save
-        String save = ".\\Results\\" + filename.getName().split("\\.")[0] + ".bmp";
+        String save = ".\\Results\\" + filename.getName().split("\\.")[0] + ".jpg";
         imwrite(save, end);
 
 
@@ -203,11 +259,14 @@ public class ImageProceed {
         Mat imageExpert = Imgcodecs.imread(fileExpert.getPath());
 
         double statistic[]=new double[3];
+
         statistic = calculeteStatistic(imageExpert,end);
-        //makeLearningInstance(imageExpert,end);
 
 
+        makeLearningInstance(imageToProceed,imageExpert);
 
     }
+
+
 
 }
