@@ -1,8 +1,13 @@
 package sample;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -12,7 +17,45 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+
+
+
+
 public class Controller {
+
+
+    public static class TableValues {
+        public double getA() {
+            return a;
+        }
+
+        public double getB() {
+            return b;
+        }
+
+        public double getC() {
+            return c;
+        }
+
+        public double getD() {
+            return d;
+        }
+
+        private double a;
+        private double b;
+        private double c;
+        private double d;
+
+        public TableValues(double a1,double b1, double c1, double d1) {
+            this.a=a1;
+            this.b = b1;
+            this. c= c1;
+            this.d = d1;
+        }
+
+    }
+
+
 
     private File fileName;
     private File fileExpert;
@@ -31,7 +74,7 @@ public class Controller {
     public Label labelIn;
     public Label labelOut;
     public Label labelExpert;
-
+    public TableView<TableValues> parametres;
 
     public void learnInstance(ActionEvent event){
         fileLearnInstance=Main.openFileChooser();
@@ -73,7 +116,8 @@ public class Controller {
     public void proceed (ActionEvent event){
         Mat image1 = Imgcodecs.imread(fileName.getPath());
         ImageProceed myImage = new ImageProceed(image1,fileName,fileExpert);
-        myImage.process();
+
+        double [] stat = myImage.process();
 
         fileResult= Menager.fileResult(fileName);
         BufferedImage image =null;
@@ -88,6 +132,41 @@ public class Controller {
        //add results to GUI
        outFile.setImage(imageGUI);
        labelOut.setText("Obrazek po przetworzeniu");
+
+        //tableView menagment
+        final ObservableList<TableValues> data =
+                FXCollections.observableArrayList(
+                        new TableValues(stat[0],stat[1],stat[2],stat[3])
+                );
+
+        TableColumn accuracy = new TableColumn("Acc");
+        TableColumn sensitivity = new TableColumn("Sens");
+        TableColumn specificity = new TableColumn("Spec");
+        TableColumn precision = new TableColumn("Prec");
+
+        accuracy.prefWidthProperty().bind(parametres.widthProperty().multiply(0.25));
+        sensitivity.prefWidthProperty().bind(parametres.widthProperty().multiply(0.25));
+        specificity.prefWidthProperty().bind(parametres.widthProperty().multiply(0.25));
+        precision.prefWidthProperty().bind(parametres.widthProperty().multiply(0.25));
+        parametres.getColumns().addAll(accuracy,sensitivity,specificity,precision);
+
+        accuracy.setCellValueFactory(
+                new PropertyValueFactory<TableValues,Double>("a")
+        );
+        sensitivity.setCellValueFactory(
+                new PropertyValueFactory<TableValues,Double>("b")
+        );
+        specificity.setCellValueFactory(
+                new PropertyValueFactory<TableValues,Double>("c")
+        );
+        precision.setCellValueFactory(
+                new PropertyValueFactory<TableValues,Double>("d")
+        );
+
+        parametres.setItems(data);
+        parametres.setVisible(true);
+
+
     }
 
 

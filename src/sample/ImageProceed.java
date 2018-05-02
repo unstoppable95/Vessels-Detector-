@@ -78,7 +78,7 @@ public class ImageProceed {
 
     }
 
-    public void process ()
+    public double[] process ()
     {
         //create image as Mat
         Mat end= new Mat();
@@ -132,9 +132,11 @@ public class ImageProceed {
         String save = ".\\Results\\" + filename.getName().split("\\.")[0] + ".jpg";
         imwrite(save, end);
 
-        double statistic[]=new double[3];
+        double statistic[];
 
         statistic = calculeteStatistic(imageExpert,end);
+
+        return statistic;
 
     }
 
