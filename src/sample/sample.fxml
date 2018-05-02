@@ -8,11 +8,11 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
-      <Button fx:id="buttonChooseFile" layoutX="20.0" layoutY="20.0" mnemonicParsing="false" onAction="#chooseFile" prefHeight="46.0" prefWidth="119.0" text="Choose file">
+      <Button fx:id="buttonChooseFile" layoutX="20.0" layoutY="24.0" mnemonicParsing="false" onAction="#chooseFile" prefHeight="46.0" prefWidth="119.0" text="Choose file">
          <font>
             <Font size="18.0" />
          </font></Button>
-      <Button fx:id="proceedButton" layoutX="20.0" layoutY="74.0" mnemonicParsing="false" onAction="#proceed" prefHeight="46.0" prefWidth="119.0" text="Proceed">
+      <Button fx:id="proceedButton" layoutX="20.0" layoutY="88.0" mnemonicParsing="false" onAction="#proceed" prefHeight="46.0" prefWidth="119.0" text="Proceed">
          <font>
             <Font size="18.0" />
          </font></Button>
@@ -31,5 +31,6 @@
          <font>
             <Font size="18.0" />
          </font></Label>
+      <Button fx:id="buttonLearnIstance" layoutX="20.0" layoutY="155.0" mnemonicParsing="false" onAction="#learnInstance" prefHeight="46.0" prefWidth="119.0" text="Choose file to do learn instance" wrapText="true" />
    </children>
 </AnchorPane>

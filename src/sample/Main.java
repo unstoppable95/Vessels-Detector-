@@ -7,31 +7,12 @@ import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.imgcodecs.Imgcodecs;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.CvType;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
-
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import org.opencv.core.Size;
-import static org.opencv.imgcodecs.Imgcodecs.imwrite;
+
 
 public class Main extends Application {
 
     private static Stage stage;
-
-
 
     @Override
     public void start(Stage primaryStage) throws Exception{

@@ -21,5 +21,25 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://C:/Program Files/Weka-3-8/weka.jar!/" />
+          <root url="file://C:/Program Files/Weka-3-8" />
+          <root url="jar://C:/Program Files/Weka-3-8/wekaexamples.zip!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="file://C:/Program Files/Weka-3-8/doc" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="file://C:/Program Files/Weka-3-8" />
+          <root url="jar://C:/Program Files/Weka-3-8/weka-src.jar!/src/main/java" />
+          <root url="jar://C:/Program Files/Weka-3-8/weka-src.jar!/src/test/java" />
+          <root url="jar://C:/Program Files/Weka-3-8/wekaexamples.zip!/src/main/java" />
+        </SOURCES>
+        <jarDirectory url="file://C:/Program Files/Weka-3-8" recursive="false" />
+        <jarDirectory url="file://C:/Program Files/Weka-3-8" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
   </component>
 </module>

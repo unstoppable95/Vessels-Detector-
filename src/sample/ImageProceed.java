@@ -15,21 +15,131 @@ public class ImageProceed {
 
 
     private Mat imageToProceed;
+    private Mat imageExpert;
     private File filename;
-    private File fileExpert;
-
-    public ImageProceed(Mat image, File file, File filex){
-        this.imageToProceed=image;
-        this.filename=file;
-        this.fileExpert=filex;
-    }
-
 
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
-    public static Mat changeBright(Mat mG ){
+    public Mat getImageToProceed() {
+        return imageToProceed;
+    }
+
+    public Mat getImageExpert() {
+        return imageExpert;
+    }
+
+    public ImageProceed(Mat image, File file, File fileExpert){
+        this.imageToProceed=image;
+        this.filename=file;
+        this.imageExpert=Imgcodecs.imread(fileExpert.getPath());
+    }
+
+    public void makeLearningInstance(Mat image, Mat expertMask){
+
+        try {
+            PrintWriter out = new PrintWriter(".\\Results\\learInstance.arff");
+            startSave(out);
+            for (int i = 0; i < image.rows() - 5; i += 5) {
+                for (int j = 0; j < image.cols() - 5; j += 5) {
+                    //make small 5x5pxl square
+                    //  Mat tmp =new Mat(5,5,CvType.CV_8UC3 );
+                    Mat tmp = new Mat(5, 5, CvType.CV_8U);
+
+                    for (int x = 0; x < 5; x++) {
+                        for (int y = 0; y < 5; y++) {
+
+                            double[] tmp2 = image.get(i + x, j + y);
+
+                            tmp.put(x, y, tmp2);
+                        }
+                    }
+
+                    //calculates Hu Moments and moments
+                    Moments mom = Imgproc.moments(tmp);
+                    Mat hu = new Mat();
+                    Imgproc.HuMoments(mom, hu);
+
+                    Mat avg = Mat.zeros(2, 1, CvType.CV_64FC1);
+                    Mat cov = Mat.zeros(2, 2, CvType.CV_64FC1);
+                    Core.calcCovarMatrix(tmp, cov, avg, Core.COVAR_COLS);
+
+                    int isVessel = checkArr(expertMask.get(i, j));
+                    saveLine(out,mom, hu, avg, cov, isVessel);
+                }
+            }
+            System.out.println("----- Dla pliku  -----" + "\n" + filename);
+            System.out.println("----- Save learnInstance.arff file ! -----");
+            out.close();
+        }
+        catch (Exception ex ){}
+
+
+    }
+
+    public void process ()
+    {
+        //create image as Mat
+        Mat end= new Mat();
+        Mat imageCny = new Mat();
+        Mat dst = new Mat();
+        Mat dilate = new Mat();
+
+        //read image
+        //convert to green
+        List<Mat> lRgb = new ArrayList<Mat>(3);
+        Core.split(imageToProceed, lRgb);
+        Mat mG = lRgb.get(1);
+
+        mG=changeBright(mG);
+
+        //imwrite("C://Users//Piotr//Dysk Google//SEMESTR 6//Informatyka_w_medycynie//Lab//Vessels_Detector//Results//Green.jpg", mG);
+
+//
+//        //filtr Gausa
+//        Imgproc.GaussianBlur(mG, dst, new Size(5, 5), 3, 3);
+//
+//        //convert to alpha - contrast ; beta - brightness
+//       // dst.convertTo(dst, -1, 3.0, 50.0);
+//
+//        //canny
+//        Imgproc.Canny(dst, imageCny, 10, 100, 3, true);
+//        imwrite("C://Users//Piotr//Dysk Google//SEMESTR 6//Informatyka_w_medycynie//Lab//Vessels_Detector//Results//zapisaneGCanny.bmp", imageCny);
+//
+//        //Dylatacja
+//        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(9, 9));
+//        Imgproc.dilate(imageCny, dilate, kernel);
+
+
+        //canny
+        Imgproc.Canny(mG, imageCny, 150, 255, 5, true);
+        //imwrite("C://Users//Piotr//Dysk Google//SEMESTR 6//Informatyka_w_medycynie//Lab//Vessels_Detector//Results//Canny.jpg", imageCny);
+
+        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3, 3));
+        Imgproc.dilate(imageCny, dilate, kernel);
+
+        Imgproc.medianBlur(dilate,dst,3);
+
+        //dilate = new Mat();
+        kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(9, 9));
+        Imgproc.dilate(dst, end, kernel);
+
+        //Imgproc.GaussianBlur(dilate, end, new Size(9, 9), 5, 5);
+        //Imgproc.medianBlur(dilate,end,15);
+
+        //result file save
+        String save = ".\\Results\\" + filename.getName().split("\\.")[0] + ".jpg";
+        imwrite(save, end);
+
+        double statistic[]=new double[3];
+
+        statistic = calculeteStatistic(imageExpert,end);
+
+    }
+
+
+    private static Mat changeBright(Mat mG ){
         for (int i = 0 ; i<mG.rows() ; i++){
             for (int j =0 ; j< mG.cols() ; j++){
                 double [] pom = mG.get(i,j);
@@ -44,7 +154,7 @@ public class ImageProceed {
         return  mG;
     }
 
-    public String checkConfusionMartix(int pxlExpert, int pxlResult){
+    private String checkConfusionMartix(int pxlExpert, int pxlResult){
         if(pxlExpert==1 && pxlResult==0) return "fn";
         if(pxlExpert==0 && pxlResult==0) return "tn";
         if(pxlExpert==1 && pxlResult==255) return "tp";
@@ -52,22 +162,23 @@ public class ImageProceed {
         else return "";
     }
 
-    public int checkArr(double[] channels){
+    private int checkArr(double[] channels){
         if(channels[0] ==0.0 && channels[1] ==0.0 && channels[2] ==0.0) return 0;
         else {
             return 1;
         }
 
     }
-    public double calculateAccuracy(double tp, double tn, double fn, double fp ){
+
+    private double calculateAccuracy(double tp, double tn, double fn, double fp ){
         return (tp+tn)/(tp+tn+fn+fp);
     }
 
-    public double calculateSensitivity(double tp, double fn){
+    private double calculateSensitivity(double tp, double fn){
         return tp/(tp+fn);
     }
 
-    public double[] calculeteStatistic(Mat imageExpert, Mat image2){
+    private double[] calculeteStatistic(Mat imageExpert, Mat image2){
         double tp=0.0;
         double fn=0.0;
         double fp=0.0;
@@ -91,11 +202,13 @@ public class ImageProceed {
         double specificity = tn/(fp+tn); //swoistosc
         double precision = tp/(tp+fp);
 
+        System.out.println("--- Statystki obrazu " + filename + " ---");
         System.out.println("TP: "+tp+"   FN: "+fn+"   FP: "+fp+"   TN: "+tn);
         System.out.println("Trafnosc: " + accuracy);
         System.out.println ("Czulosc: "+ sensitivity);
         System.out.println("Swoistosc "+specificity);
         System.out.println("Precyzja "+precision);
+        System.out.println("--- KONIEC !!! ---");
 
         double[] result = new double[4];
         result[0]=accuracy;
@@ -106,7 +219,8 @@ public class ImageProceed {
         return result;
 
     }
-    public void startSave(PrintWriter out){
+
+    private void startSave(PrintWriter out){
 
             out.println("%");
             out.println("@relation 'dataset'");
@@ -127,7 +241,6 @@ public class ImageProceed {
             out.println("@attribute centralMoment20 numeric");
             out.println("@attribute centralMoment21 numeric");
             out.println("@attribute centralMoment30 numeric");
-            ////COVARIANCE DIDNT ADDED
             out.println("@attribute mean1 numeric");
             out.println("@attribute mean2 numeric");
             out.println("@attribute mean3 numeric");
@@ -135,11 +248,9 @@ public class ImageProceed {
             out.println("@attribute mean5 numeric");
             out.println("@attribute isVessel {true,false}");
             out.println("@data");
-
     }
 
-
-    public void saveLine(PrintWriter out,Moments mom, Mat hu, Mat avg, Mat cov, int isVessel){
+    private void saveLine(PrintWriter out,Moments mom, Mat hu, Mat avg, Mat cov, int isVessel){
         boolean isV;
         if(isVessel==0) isV=false;
         else isV=true;
@@ -150,123 +261,6 @@ public class ImageProceed {
                 mom.m11 + "," + mom.m12 + "," + mom.m20 + "," + mom.m21 + " " + mom.m30 + "," +
                 avg.get(0, 0)[0] + "," + avg.get(1, 0)[0] + ","
                 + avg.get(2, 0)[0] + "," + avg.get(3, 0)[0] + "," + avg.get(4, 0)[0] + "," + isV);
-
         }
-
-
-
-
-    public void makeLearningInstance(Mat image, Mat expertMask){
-
-    try {
-        PrintWriter out = new PrintWriter(".\\Results\\data.txt");
-        System.out.println("Zaczynam zapisywac");
-        startSave(out);
-        System.out.println("zapisalem wstep");
-        for (int i = 0; i < image.rows() - 5; i += 5) {
-            for (int j = 0; j < image.cols() - 5; j += 5) {
-                //make small 5x5pxl square
-                //  Mat tmp =new Mat(5,5,CvType.CV_8UC3 );
-                Mat tmp = new Mat(5, 5, CvType.CV_8U);
-
-                for (int x = 0; x < 5; x++) {
-                    for (int y = 0; y < 5; y++) {
-
-                        double[] tmp2 = image.get(i + x, j + y);
-
-                        tmp.put(x, y, tmp2);
-                    }
-                }
-
-
-                //calculates Hu Moments and moments
-                Moments mom = Imgproc.moments(tmp);
-                Mat hu = new Mat();
-                Imgproc.HuMoments(mom, hu);
-
-                Mat avg = Mat.zeros(2, 1, CvType.CV_64FC1);
-                Mat cov = Mat.zeros(2, 2, CvType.CV_64FC1);
-                Core.calcCovarMatrix(tmp, cov, avg, Core.COVAR_COLS);
-
-                int isVessel = checkArr(expertMask.get(i, j));
-                saveLine(out,mom, hu, avg, cov, isVessel);
-            }
-        }
-        System.out.println("DONE");
-        out.close();
-    }
-    catch (Exception ex ){}
-
-
-    }
-
-    public void process ()
-    {
-        //create image as Mat
-        Mat end= new Mat();
-        Mat imageCny = new Mat();
-        Mat dst = new Mat();
-        Mat dilate = new Mat();
-        //read image
-
-        //convert to green
-        List<Mat> lRgb = new ArrayList<Mat>(3);
-        Core.split(imageToProceed, lRgb);
-        Mat mG = lRgb.get(1);
-
-        mG=changeBright(mG);
-
-        imwrite("C://Users//Piotr//Dysk Google//SEMESTR 6//Informatyka_w_medycynie//Lab//Vessels_Detector//Results//Green.jpg", mG);
-
-//
-//        //filtr Gausa
-//        Imgproc.GaussianBlur(mG, dst, new Size(5, 5), 3, 3);
-//
-//        //convert to alpha - contrast ; beta - brightness
-//       // dst.convertTo(dst, -1, 3.0, 50.0);
-//
-//        //canny
-//        Imgproc.Canny(dst, imageCny, 10, 100, 3, true);
-//        imwrite("C://Users//Piotr//Dysk Google//SEMESTR 6//Informatyka_w_medycynie//Lab//Vessels_Detector//Results//zapisaneGCanny.bmp", imageCny);
-//
-//        //Dylatacja
-//        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(9, 9));
-//        Imgproc.dilate(imageCny, dilate, kernel);
-
-
-        //canny
-        Imgproc.Canny(mG, imageCny, 150, 255, 5, true);
-        imwrite("C://Users//Piotr//Dysk Google//SEMESTR 6//Informatyka_w_medycynie//Lab//Vessels_Detector//Results//Canny.jpg", imageCny);
-
-        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3, 3));
-        Imgproc.dilate(imageCny, dilate, kernel);
-
-        Imgproc.medianBlur(dilate,dst,3);
-
-        //dilate = new Mat();
-        kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(9, 9));
-        Imgproc.dilate(dst, end, kernel);
-
-        //Imgproc.GaussianBlur(dilate, end, new Size(9, 9), 5, 5);
-        //Imgproc.medianBlur(dilate,end,15);
-
-        //result file save
-        String save = ".\\Results\\" + filename.getName().split("\\.")[0] + ".jpg";
-        imwrite(save, end);
-
-
-        //statystyki i maszine learning
-        Mat imageExpert = Imgcodecs.imread(fileExpert.getPath());
-
-        double statistic[]=new double[3];
-
-        statistic = calculeteStatistic(imageExpert,end);
-
-
-        makeLearningInstance(imageToProceed,imageExpert);
-
-    }
-
-
 
 }

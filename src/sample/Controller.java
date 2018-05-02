@@ -7,14 +7,10 @@ import javafx.scene.image.Image;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import javafx.scene.control.Button;
-
 import javafx.scene.image.ImageView;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-
-
 
 public class Controller {
 
@@ -22,14 +18,29 @@ public class Controller {
     private File fileExpert;
     private File fileResult;
 
+    //make instance files
+    private File fileLearnInstance;
+    private File fileExpertLearnInstance;
+
     public Button buttonChooseFile;
     public Button proceedButton;
+    public Button buttonLearnIstance;
     public ImageView outFile;
     public ImageView inFile;
     public ImageView expertFile;
     public Label labelIn;
     public Label labelOut;
     public Label labelExpert;
+
+
+    public void learnInstance(ActionEvent event){
+        fileLearnInstance=Main.openFileChooser();
+        fileExpertLearnInstance=Menager.fileExpert(fileLearnInstance);
+
+        Mat learnImage = Imgcodecs.imread(fileLearnInstance.getPath());
+        ImageProceed myImage = new ImageProceed(learnImage,fileLearnInstance,fileExpertLearnInstance);
+        myImage.makeLearningInstance(myImage.getImageToProceed(), myImage.getImageExpert());
+    }
 
 
     public void chooseFile(ActionEvent event){
