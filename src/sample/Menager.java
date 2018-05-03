@@ -32,4 +32,17 @@ public class Menager {
         return matchingFiles[0];
     }
 
+
+    public static File fileLearn(File filename){
+
+        String name1 = "LEARN" +filename.getName().split("\\.")[0];
+        File f = new File(".\\Results");
+        File[] matchingFiles = f.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.contains(name1);
+            }
+        });
+
+        return matchingFiles[0];
+    }
 }

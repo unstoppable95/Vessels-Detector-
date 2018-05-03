@@ -60,6 +60,7 @@ public class Controller {
     private File fileName;
     private File fileExpert;
     private File fileResult;
+    private File fileResultLearn;
 
     //make instance files
     private File fileLearnInstance;
@@ -71,9 +72,11 @@ public class Controller {
     public ImageView outFile;
     public ImageView inFile;
     public ImageView expertFile;
+    public ImageView learnFile;
     public Label labelIn;
     public Label labelOut;
     public Label labelExpert;
+    public Label labelLearn;
     public TableView<TableValues> parametres;
 
     public void learnInstance(ActionEvent event){
@@ -118,6 +121,8 @@ public class Controller {
         ImageProceed myImage = new ImageProceed(image1,fileName,fileExpert);
 
         double [] stat = myImage.process();
+
+
 
         fileResult= Menager.fileResult(fileName);
         BufferedImage image =null;
@@ -166,7 +171,24 @@ public class Controller {
         parametres.setItems(data);
         parametres.setVisible(true);
 
+        myImage.makeModel(myImage.getImageToProceed());
 
+
+
+
+        fileResultLearn= Menager.fileLearn(fileName);
+        BufferedImage imageL =null;
+        try {
+            imageL = ImageIO.read(fileResultLearn);
+        }
+        catch (Exception e ){
+            System.out.println("Cos zle poszlo");
+        }
+        Image imageGUILearn= SwingFXUtils.toFXImage(imageL, null);
+
+        //add results to GUI
+        learnFile.setImage(imageGUILearn);
+        labelLearn.setText("Obrazek po WECE");
     }
 
 

@@ -34,5 +34,11 @@
          </font></Label>
       <Button fx:id="buttonLearnIstance" layoutX="20.0" layoutY="155.0" mnemonicParsing="false" onAction="#learnInstance" prefHeight="46.0" prefWidth="119.0" text="Choose file to do learn instance" wrapText="true" />
       <TableView fx:id="parametres" layoutX="20.0" layoutY="250.0" prefHeight="229.0" prefWidth="300.0" visible="false" />
+      <ImageView fx:id="learnFile" fitHeight="200.0" fitWidth="300.0" layoutX="675.0" layoutY="340.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="labelLearn" layoutX="775.0" layoutY="309.0">
+         <font>
+            <Font name="Arial" size="18.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
