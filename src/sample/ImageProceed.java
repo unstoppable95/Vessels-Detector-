@@ -62,46 +62,60 @@ public class ImageProceed {
 
     public void makeLearningInstance(Mat image, Mat expertMask){
 
+        int positive=0;
+        int negative=0;
         try {
-            PrintWriter out = new PrintWriter(".\\Results\\learInstance.arff");
-            startSave(out);
-            for (int i = 0; i < image.rows() - 5; i += 5) {
-                for (int j = 0; j < image.cols() - 5; j += 5) {
-                    //make small 5x5pxl square
-                    //  Mat tmp =new Mat(5,5,CvType.CV_8UC3 );
-                    Mat tmp = new Mat(5, 5, CvType.CV_8U);
+            PrintWriter out = new PrintWriter(".\\Results\\learnInstance.arff");
 
+            startSave(out);
+
+            for (int i = 0; i < image.rows() - 5; i +=3) {
+                for (int j = 0; j < image.cols() - 5; j+=3) {
+                    //make small 5x5pxl square
+                    Mat tmp = Mat.zeros(5, 5, CvType.CV_8U);
                     for (int x = 0; x < 5; x++) {
                         for (int y = 0; y < 5; y++) {
-
+                            //int npixels = image.total() * image.elemSize();
+                            // byte[] pixels = new byte[npixels];
+                            //image.get(i+x,j+y,pixels);
+                            // Imgproc.CvtColor(source, BlackWhite, Imgproc. ColorBgr2gray);
                             double[] tmp2 = image.get(i + x, j + y);
-
                             tmp.put(x, y, tmp2);
                         }
                     }
-//                    if (i==1000 && j==1000){
-//                        String save = ".\\Results\\" + "square.jpg";
-//                        imwrite(save, tmp);
-//                    }
 
                     //calculates Hu Moments and moments
                     Moments mom = Imgproc.moments(tmp);
                     Mat hu = new Mat();
                     Imgproc.HuMoments(mom, hu);
+                    //System.out.println("Central Moments: " +mom.m00 +" "+ mom.m01 +" "+ mom.m02 + " "+mom.m03 +" "+ mom.m10 +" "+ mom.m11 +" "+ mom.m12 +" "+ mom.m20 +" "+ mom.m21 +" "+ mom.m30);
 
+                    //calculate variance
                     Mat avg = Mat.zeros(2, 1, CvType.CV_64FC1);
                     Mat cov = Mat.zeros(2, 2, CvType.CV_64FC1);
                     Core.calcCovarMatrix(tmp, cov, avg, Core.COVAR_COLS);
-
+                    //System.out.println("\n\nCOVAR: "+cov.dump()+"   MEAN: "+avg.dump());
+                    //System.out.println("Zaczynam zapisywac");
                     int isVessel = checkArr(expertMask.get(i+2, j+2));
-                    saveLine(out,mom, hu, avg, cov, isVessel);
+                    if(isVessel==1) positive++;
+                    //if(isVessel==0) negative++;
+
+                    if(positive>=negative) {
+                        //System.out.println("JESTEM W IFIE");
+                        saveLine(out,mom, hu, avg, cov, isVessel);
+                        //if(isVessel==1) positive++;
+                        if(isVessel==0) negative++;
+                    }
+                    //if(isVessel==1) System.out.println("True: i= "+i+" j= "+j);
+
                 }
             }
             System.out.println("----- Dla pliku  -----" + "\n" + filename);
             System.out.println("----- Save learnInstance.arff file ! -----");
             out.close();
+        } catch( Exception e)
+        {
         }
-        catch (Exception ex ){}
 
 
     }
@@ -343,7 +357,7 @@ public class ImageProceed {
         int ileInnychNizZero=0;
         Mat image2 =new Mat(image.rows()-4,image.cols()-4,CvType.CV_8U );
 
-        Instances dataset = loadDataset(".\\Results\\learInstance.arff");
+        Instances dataset = loadDataset(".\\Results\\learnInstance.arff");
         Filter filter = new Normalize();
         dataset.randomize(new Debug.Random(1));
         System.out.println("TU JESTEM1");
@@ -351,7 +365,7 @@ public class ImageProceed {
         try {
             //filter.setInputFormat(dataset);
             //Instances datasetnor = Filter.useFilter(dataset, filter);
-            int trainSize = (int) Math.round(dataset.numInstances() *0.5);//0.8
+            int trainSize = (int) Math.round(dataset.numInstances());//0.8
             int testSize = dataset.numInstances() - trainSize;
 
             dataset.randomize(new Debug.Random(1));
@@ -438,17 +452,20 @@ public class ImageProceed {
 
                     //Instance instance = new Instance((int) Math.pow(valuesList.size()+ 1));
                     Instance instance = new DenseInstance(valuesList.size()+1);
-                    //System.out.println("e");
                     instance.setDataset(dataset);
-                    //System.out.println("f");
                     for (int z = 0; z < valuesList.size(); z++) {
                         instance.setValue(z, valuesList.get(z));
                     }
+//                    System.out.println("xxxxx");
+//                    if(i%100==0 && j%100==0) {
+//                        System.out.println("Instance: "+instance.toString());
+//                    }
+//                    System.out.println("yyyyyy");
 
                     double[] clsLabel = ann.distributionForInstance(instance);
 
                     double pixel;
-
+                    //System.out.println("Tablica: "+clsLabel[0]+" > "+clsLabel[1]);
                     if(clsLabel[0]>clsLabel[1])
                     {
                         pixel=255.0;
@@ -456,19 +473,8 @@ public class ImageProceed {
                     }
                     else pixel=0.0;
 
-                    if(j==1000 && i==1000) {
+                    if(i%100==0 && j%100==0) {
                         System.out.println("Values list: "+valuesList);
-                        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXx");
-                        System.out.println("Momenty Hu: " + hu.dump()); //there are 7 hu moments
-                        double[] pom = hu.get(1, 0);
-                        System.out.println("MomentyHu2: " + pom[0]);
-                        System.out.println("MomentyHu2: " + pom[0]);
-                        System.out.println("MomentyHu2: " + pom[0]);
-                        System.out.println("MomentyHu2: " + pom[0]);
-                        System.out.println("MomentyHu2: " + pom[0]);
-                        System.out.println("MomentyHu2: " + pom[0]);
-                        System.out.println("MomentyHu2: " + pom[0]);
-                        System.out.println("Central Moments: " + mom.m00 + " " + mom.m01 + " " + mom.m02 + " " + mom.m03 + " " + mom.m10 + " " + mom.m11 + " " + mom.m12 + " " + mom.m20 + " " + mom.m21 + " " + mom.m30);
                     }
 
 //                    double[] pixelsToAdd = new double[3];
@@ -495,7 +501,9 @@ public class ImageProceed {
             String fileNAME = ".\\Results\\LEARN" + filename.getName().split("\\.")[0]+".jpg";
             System.out.println(fileNAME);
 
+
             imwrite(fileNAME, image2);
+            // System.out.println("Image2: "+image2.);
             System.out.println("!!!!ZAPISANE!!!!");
 
         }catch(Exception e){
