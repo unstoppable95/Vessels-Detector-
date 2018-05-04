@@ -40,6 +40,7 @@ public class ImageProceed {
 
     private Mat imageToProceed;
     private Mat imageExpert;
+    private Mat eyeMask;
     private File filename;
 
     static {
@@ -50,17 +51,35 @@ public class ImageProceed {
         return imageToProceed;
     }
 
+    public Mat getEyeMask(){
+        return eyeMask;
+    }
+
     public Mat getImageExpert() {
         return imageExpert;
     }
 
-    public ImageProceed(Mat image, File file, File fileExpert){
+    public ImageProceed(Mat image, File file, File fileExpert,File fileEyeMask){
         this.imageToProceed=image;
         this.filename=file;
+
         this.imageExpert=Imgcodecs.imread(fileExpert.getPath());
+        this.eyeMask=Imgcodecs.imread(fileEyeMask.getPath());
     }
 
-    public void makeLearningInstance(Mat image, Mat expertMask){
+    public boolean isEye(Mat eyeMask, int i, int j){
+        if(eyeMask.get(i,j)[0]==0.0) return false;
+        else return true;
+
+    }
+
+    public void makeLearningInstance(Mat image1, Mat expertMask,Mat eyeMask){
+        //eyeMask=Imgcodecs.imread(".\\EyesMasks\\01_h_mask.tif");
+        //System.out.println("I am here 1"+eyeMask.get(0,0)[0]);
+        List<Mat> lRgb = new ArrayList<Mat>(3);
+        Core.split(image1, lRgb);
+        Mat image = lRgb.get(1);
+
 
         int positive=0;
         int negative=0;
@@ -68,48 +87,48 @@ public class ImageProceed {
             PrintWriter out = new PrintWriter(".\\Results\\learnInstance.arff");
 
             startSave(out);
-
+           // System.out.println("I am here 2");
             for (int i = 0; i < image.rows() - 5; i +=3) {
                 for (int j = 0; j < image.cols() - 5; j+=3) {
-                    //make small 5x5pxl square
-                    Mat tmp = Mat.zeros(5, 5, CvType.CV_8U);
-                    for (int x = 0; x < 5; x++) {
-                        for (int y = 0; y < 5; y++) {
-                            //int npixels = image.total() * image.elemSize();
-                            // byte[] pixels = new byte[npixels];
-                            //image.get(i+x,j+y,pixels);
-                            // Imgproc.CvtColor(source, BlackWhite, Imgproc. ColorBgr2gray);
-                            double[] tmp2 = image.get(i + x, j + y);
-                            tmp.put(x, y, tmp2);
+                    if (isEye(eyeMask, i, j) == true && isEye(eyeMask, i + 5, j + 5) == true) {
+                        //System.out.println("I am here 3");
+                        //make small 5x5pxl square
+                        Mat tmp = Mat.zeros(5, 5, CvType.CV_8U);
+                        for (int x = 0; x < 5; x++) {
+                            for (int y = 0; y < 5; y++) {
+                                //int npixels = image.total() * image.elemSize();
+                                // byte[] pixels = new byte[npixels];
+                                //image.get(i+x,j+y,pixels);
+                                // Imgproc.CvtColor(source, BlackWhite, Imgproc. ColorBgr2gray);
+                                double[] tmp2 = image.get(i + x, j + y);
+                                tmp.put(x, y, tmp2);
+                            }
                         }
+
+                        //calculates Hu Moments and moments
+                        Moments mom = Imgproc.moments(tmp);
+                        Mat hu = new Mat();
+                        Imgproc.HuMoments(mom, hu);
+                        //System.out.println("Central Moments: " +mom.m00 +" "+ mom.m01 +" "+ mom.m02 + " "+mom.m03 +" "+ mom.m10 +" "+ mom.m11 +" "+ mom.m12 +" "+ mom.m20 +" "+ mom.m21 +" "+ mom.m30);
+                        //calculate variance
+                        Mat avg = Mat.zeros(2, 1, CvType.CV_64FC1);
+                        Mat cov = Mat.zeros(2, 2, CvType.CV_64FC1);
+                        Core.calcCovarMatrix(tmp, cov, avg, Core.COVAR_COLS);
+                        //System.out.println("\n\nCOVAR: "+cov.dump()+"   MEAN: "+avg.dump());
+                        //System.out.println("Zaczynam zapisywac");
+                        int isVessel = checkArr(expertMask.get(i + 2, j + 2));
+                        if (isVessel == 1) positive++;
+
+                        if (positive >= negative) {
+                            saveLine(out, mom, hu, avg, cov, isVessel);
+                            if (isVessel == 0) negative++;
+                        }
+                        //if(isVessel==1) System.out.println("True: i= "+i+" j= "+j);
+
                     }
-
-                    //calculates Hu Moments and moments
-                    Moments mom = Imgproc.moments(tmp);
-                    Mat hu = new Mat();
-                    Imgproc.HuMoments(mom, hu);
-                    //System.out.println("Central Moments: " +mom.m00 +" "+ mom.m01 +" "+ mom.m02 + " "+mom.m03 +" "+ mom.m10 +" "+ mom.m11 +" "+ mom.m12 +" "+ mom.m20 +" "+ mom.m21 +" "+ mom.m30);
-
-                    //calculate variance
-                    Mat avg = Mat.zeros(2, 1, CvType.CV_64FC1);
-                    Mat cov = Mat.zeros(2, 2, CvType.CV_64FC1);
-                    Core.calcCovarMatrix(tmp, cov, avg, Core.COVAR_COLS);
-                    //System.out.println("\n\nCOVAR: "+cov.dump()+"   MEAN: "+avg.dump());
-                    //System.out.println("Zaczynam zapisywac");
-                    int isVessel = checkArr(expertMask.get(i+2, j+2));
-                    if(isVessel==1) positive++;
-                    //if(isVessel==0) negative++;
-
-                    if(positive>=negative) {
-                        //System.out.println("JESTEM W IFIE");
-                        saveLine(out,mom, hu, avg, cov, isVessel);
-                        //if(isVessel==1) positive++;
-                        if(isVessel==0) negative++;
-                    }
-                    //if(isVessel==1) System.out.println("True: i= "+i+" j= "+j);
-
                 }
             }
+
             System.out.println("----- Dla pliku  -----" + "\n" + filename);
             System.out.println("----- Save learnInstance.arff file ! -----");
             out.close();
@@ -225,6 +244,9 @@ public class ImageProceed {
     }
 
     private double[] calculeteStatistic(Mat imageExpert, Mat image2){
+        //Mat eyeMask=Imgcodecs.imread(".\\EyesMasks\\01_h_mask.tif");
+        System.out.println("Ilosc kanalow " + image2.channels());
+
         double tp=0.0;
         double fn=0.0;
         double fp=0.0;
@@ -232,14 +254,15 @@ public class ImageProceed {
 
         for(int i=0; i<imageExpert.rows(); i++){
             for(int j=0; j<imageExpert.cols(); j++){
-                //checking confusion matrix
-                int channel = (int)image2.get(i,j)[0];
-                String x=checkConfusionMartix(checkArr(imageExpert.get(i,j)), channel); //1 -> 0/1    2 -> 0/255
-                if(x.equals("tp")) tp++;
-                if(x.equals("fn")) fn++;
-                if(x.equals("fp")) fp++;
-                if(x.equals("tn")) tn++;
-
+                if (isEye(eyeMask, i, j) == true) {
+                    //checking confusion matrix
+                    int channel = (int) image2.get(i, j)[0];
+                    String x = checkConfusionMartix(checkArr(imageExpert.get(i, j)), channel); //1 -> 0/1    2 -> 0/255
+                    if (x.equals("tp")) tp++;
+                    if (x.equals("fn")) fn++;
+                    if (x.equals("fp")) fp++;
+                    if (x.equals("tn")) tn++;
+                }
             }
         }
 
@@ -268,32 +291,32 @@ public class ImageProceed {
 
     private void startSave(PrintWriter out){
 
-            out.println("%");
-            out.println("@relation 'dataset'");
-            out.println("@attribute hu1 numeric");
-            out.println("@attribute hu2 numeric");
-            out.println("@attribute hu3 numeric");
-            out.println("@attribute hu4 numeric");
-            out.println("@attribute hu5 numeric");
-            out.println("@attribute hu6 numeric");
-            out.println("@attribute hu7 numeric");
-            out.println("@attribute centralMoment00 numeric");
-            out.println("@attribute centralMoment01 numeric");
-            out.println("@attribute centralMoment02 numeric");
-            out.println("@attribute centralMoment03 numeric");
-            out.println("@attribute centralMoment10 numeric");
-            out.println("@attribute centralMoment11 numeric");
-            out.println("@attribute centralMoment12 numeric");
-            out.println("@attribute centralMoment20 numeric");
-            out.println("@attribute centralMoment21 numeric");
-            out.println("@attribute centralMoment30 numeric");
-            out.println("@attribute mean1 numeric");
-            out.println("@attribute mean2 numeric");
-            out.println("@attribute mean3 numeric");
-            out.println("@attribute mean4 numeric");
-            out.println("@attribute mean5 numeric");
-            out.println("@attribute isVessel {true,false}");
-            out.println("@data");
+        out.println("%");
+        out.println("@relation 'dataset'");
+        out.println("@attribute hu1 numeric");
+        out.println("@attribute hu2 numeric");
+        out.println("@attribute hu3 numeric");
+        out.println("@attribute hu4 numeric");
+        out.println("@attribute hu5 numeric");
+        out.println("@attribute hu6 numeric");
+        out.println("@attribute hu7 numeric");
+        out.println("@attribute centralMoment00 numeric");
+        out.println("@attribute centralMoment01 numeric");
+        out.println("@attribute centralMoment02 numeric");
+        out.println("@attribute centralMoment03 numeric");
+        out.println("@attribute centralMoment10 numeric");
+        out.println("@attribute centralMoment11 numeric");
+        out.println("@attribute centralMoment12 numeric");
+        out.println("@attribute centralMoment20 numeric");
+        out.println("@attribute centralMoment21 numeric");
+        out.println("@attribute centralMoment30 numeric");
+        out.println("@attribute mean1 numeric");
+        out.println("@attribute mean2 numeric");
+        out.println("@attribute mean3 numeric");
+        out.println("@attribute mean4 numeric");
+        out.println("@attribute mean5 numeric");
+        out.println("@attribute isVessel {true,false}");
+        out.println("@data");
     }
 
     private void saveLine(PrintWriter out,Moments mom, Mat hu, Mat avg, Mat cov, int isVessel){
@@ -307,7 +330,7 @@ public class ImageProceed {
                 mom.m11 + "," + mom.m12 + "," + mom.m20 + "," + mom.m21 + "," + mom.m30 + "," +
                 avg.get(0, 0)[0] + "," + avg.get(1, 0)[0] + ","
                 + avg.get(2, 0)[0] + "," + avg.get(3, 0)[0] + "," + avg.get(4, 0)[0] + "," + isV);
-        }
+    }
 
     //////////////////////////////////////////
     public Instances loadDataset(String path) {
@@ -353,29 +376,36 @@ public class ImageProceed {
         }
     }
 
-    public void makeModel(Mat image){
+
+    public double [] makeModel(Mat image1){
+        List<Mat> lRgb = new ArrayList<Mat>(3);
+        Core.split(image1, lRgb);
+        Mat image = lRgb.get(1);
+        double statistic [] = new double[4];
+
         int ileInnychNizZero=0;
         Mat image2 =new Mat(image.rows()-4,image.cols()-4,CvType.CV_8U );
 
         Instances dataset = loadDataset(".\\Results\\learnInstance.arff");
-        Filter filter = new Normalize();
+        /////      Filter filter = new Normalize();
         dataset.randomize(new Debug.Random(1));
-        System.out.println("TU JESTEM1");
         //Normalize dataset
         try {
             //filter.setInputFormat(dataset);
             //Instances datasetnor = Filter.useFilter(dataset, filter);
-            int trainSize = (int) Math.round(dataset.numInstances());//0.8
-            int testSize = dataset.numInstances() - trainSize;
+            int trainSize = (int) Math.round(dataset.numInstances()*0.8);//0.8
+            ///    int testSize = dataset.numInstances() - trainSize;
 
-            dataset.randomize(new Debug.Random(1));
+            dataset.randomize(new Debug.Random(1));// if you comment this line the accuracy of the model will be droped from 96.6% to 80%
+
 
             //Normalize dataset
-            filter.setInputFormat(dataset);
-            Instances datasetnor = Filter.useFilter(dataset, filter);
-            trainSize=2300;////
-            Instances traindataset = new Instances(datasetnor, 0, trainSize);
-            Instances testdataset = new Instances(datasetnor, trainSize, testSize);
+            /////    filter.setInputFormat(dataset);
+            /////      Instances datasetnor = Filter.useFilter(dataset, filter);
+            // trainSize=10000;////
+            /////  V     Instances traindataset = new Instances(datasetnor, 0, trainSize);
+            Instances traindataset = new Instances(dataset, 0, trainSize);
+            ///     Instances testdataset = new Instances(datasetnor, trainSize, testSize);
             // build classifier with train dataset
             ///////////////////////////////////////////
             //MultilayerPerceptron ann = (MultilayerPerceptron) buildClassifier(traindataset); //TU SIE SYPIE
@@ -383,9 +413,8 @@ public class ImageProceed {
             ann.buildClassifier(traindataset);/////////////////////////
             ///////////////////////////
             // Evaluate classifier with test dataset
-            String evalsummary = evaluateModel(ann, traindataset, testdataset);
-            System.out.println("TU JESTEM4");
-            System.out.println("Evaluation: " + evalsummary);
+            ///      String evalsummary = evaluateModel(ann, traindataset, testdataset);
+            ///      System.out.println("Evaluation: " + evalsummary);
 
 
             //Save model
@@ -402,13 +431,12 @@ public class ImageProceed {
             //         + avg.get(2, 0)[0] + "," + avg.get(3, 0)[0] + "," + avg.get(4, 0)[0] ), filter),".\\Results\\model.model");
             //
 
-            ////////////////////////////////////////////////////////////////////////////////////////////////////
             System.out.println("TU JESTEM6");
             System.out.println(image.rows()+"  "+image.cols());
             for (int i = 0; i < image.rows() - 5; i++) {
                 for (int j = 0; j < image.cols() - 5; j++) {
+
                     Mat tmp = Mat.zeros(5, 5, CvType.CV_8U);
-                    // System.out.println("a");
                     for (int x = 0; x < 5; x++) {
                         for (int y = 0; y < 5; y++) {
                             double[] tmp2 = image.get(i + x, j + y);
@@ -451,7 +479,7 @@ public class ImageProceed {
                             avg.get(2, 0)[0], avg.get(3, 0)[0], avg.get(4, 0)[0]);
 
                     //Instance instance = new Instance((int) Math.pow(valuesList.size()+ 1));
-                    Instance instance = new DenseInstance(valuesList.size()+1);
+                    Instance instance = new DenseInstance(valuesList.size() + 1);
                     instance.setDataset(dataset);
                     for (int z = 0; z < valuesList.size(); z++) {
                         instance.setValue(z, valuesList.get(z));
@@ -466,23 +494,24 @@ public class ImageProceed {
 
                     double pixel;
                     //System.out.println("Tablica: "+clsLabel[0]+" > "+clsLabel[1]);
-                    if(clsLabel[0]>clsLabel[1])
-                    {
-                        pixel=255.0;
+                    if (clsLabel[0] > clsLabel[1]) {
+                        pixel = 255.0;
                         ileInnychNizZero++;
-                    }
-                    else pixel=0.0;
+                    } else pixel = 0.0;
 
-                    if(i%100==0 && j%100==0) {
-                        System.out.println("Values list: "+valuesList);
-                    }
+//                    Mat eyeMask2=Imgcodecs.imread(".\\EyesMasks\\01_h_mask.tif");
+  //                 if(isEye(eyeMask,i,j)==false)
+    //                    pixel=0.0;
+//                    if (i % 100 == 0 && j % 100 == 0) {
+//                        System.out.println("Values list: " + valuesList);
+//                    }
 
 //                    double[] pixelsToAdd = new double[3];
 //                    pixelsToAdd[0]=pixel;
 //                    pixelsToAdd[1]=pixel;
 //                    pixelsToAdd[2]=pixel;
-                    double pixelsToAdd=pixel;
-                    image2.put(i,j,pixelsToAdd);
+                    double pixelsToAdd = pixel;
+                    image2.put(i, j, pixelsToAdd);
 
                 }
             }
@@ -502,14 +531,26 @@ public class ImageProceed {
             System.out.println(fileNAME);
 
 
-            imwrite(fileNAME, image2);
+            Mat afterMedian = new Mat();
+            Imgproc.medianBlur(image2,afterMedian,3);
+
+            imwrite(fileNAME, afterMedian);
             // System.out.println("Image2: "+image2.);
+
+
+            statistic = calculeteStatistic(imageExpert,afterMedian);
+
+
             System.out.println("!!!!ZAPISANE!!!!");
 
         }catch(Exception e){
             System.out.println("!!!!blad!!!!");
+            statistic[0]=0;
+            statistic[1]=0;
+            statistic[2]=0;
+            statistic[3]=0;
         }
-
+        return  statistic;
     }
 
     ///////////////////////////////////

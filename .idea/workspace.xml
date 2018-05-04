@@ -3,9 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Results/learInstance.arff" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Vessels_Detector/sample/Controller.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Vessels_Detector/sample/Controller.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Vessels_Detector/sample/ImageProceed.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Vessels_Detector/sample/ImageProceed.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Vessels_Detector/sample/Menager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Vessels_Detector/sample/Menager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sample/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sample/Controller.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/sample/ImageProceed.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sample/ImageProceed.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sample/Menager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sample/Menager.java" afterDir="false" />
     </list>
     <ignored path="JavaFxApplication.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -66,17 +69,27 @@
       <file leaf-file-name="ImageProceed.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/sample/ImageProceed.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="188">
-              <caret line="359" column="66" selection-start-line="359" selection-start-column="66" selection-end-line="359" selection-end-column="66" />
+            <state relative-caret-position="315">
+              <caret line="264" column="17" selection-start-line="264" selection-start-column="17" selection-end-line="264" selection-end-column="17" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="method#process#0;class#ImageProceed#0" />
+                <element signature="e#1224#1225#0" expanded="true" />
+                <element signature="e#1261#1262#0" expanded="true" />
+                <element signature="e#1291#1292#0" expanded="true" />
+                <element signature="e#1321#1322#0" expanded="true" />
+                <element signature="e#1356#1357#0" expanded="true" />
+                <element signature="e#1390#1391#0" expanded="true" />
                 <element signature="method#changeBright#0;class#ImageProceed#0" />
-                <element signature="method#checkConfusionMartix#0;class#ImageProceed#0" />
-                <element signature="method#checkArr#0;class#ImageProceed#0" />
-                <element signature="method#calculeteStatistic#0;class#ImageProceed#0" />
+                <element signature="e#7810#7811#0" expanded="true" />
+                <element signature="e#7854#7855#0" expanded="true" />
+                <element signature="e#7918#7919#0" expanded="true" />
+                <element signature="e#7951#7952#0" expanded="true" />
                 <element signature="method#startSave#0;class#ImageProceed#0" />
                 <element signature="method#saveLine#0;class#ImageProceed#0" />
+                <element signature="method#loadDataset#0;class#ImageProceed#0" />
+                <element signature="method#buildClassifier#0;class#ImageProceed#0" />
+                <element signature="method#evaluateModel#0;class#ImageProceed#0" />
+                <element signature="method#saveModel#0;class#ImageProceed#0" />
               </folding>
             </state>
           </provider>
@@ -85,8 +98,8 @@
       <file leaf-file-name="Controller.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/sample/Controller.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
-              <caret line="173" column="33" selection-start-line="173" selection-start-column="26" selection-end-line="173" selection-end-column="33" />
+            <state relative-caret-position="173">
+              <caret line="126" column="74" selection-start-line="126" selection-start-column="64" selection-end-line="126" selection-end-column="74" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -94,10 +107,20 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="sample.fxml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/out/production/Vessels_Detector/sample/sample.fxml">
+          <provider editor-type-id="JavaFX-Scene-Builder" />
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="136">
+              <caret line="8" selection-end-line="8" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="ModelClassifier.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/sample/ModelClassifier.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1955">
+            <state relative-caret-position="570">
               <caret line="123" column="90" selection-start-line="123" selection-start-column="90" selection-end-line="124" selection-end-column="9" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -111,14 +134,18 @@
       <file leaf-file-name="Menager.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/sample/Menager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="629">
-              <caret line="44" selection-start-line="44" selection-end-line="44" />
+            <state relative-caret-position="570">
+              <caret line="48" column="30" selection-start-line="48" selection-start-column="23" selection-end-line="48" selection-end-column="30" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#379#380#0" expanded="true" />
                 <element signature="e#438#439#0" expanded="true" />
                 <element signature="e#767#768#0" expanded="true" />
                 <element signature="e#826#827#0" expanded="true" />
+                <element signature="e#1164#1165#0" expanded="true" />
+                <element signature="e#1223#1224#0" expanded="true" />
+                <element signature="e#1560#1561#0" expanded="true" />
+                <element signature="e#1619#1620#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -132,6 +159,11 @@
         <option value="Class" />
       </list>
     </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>make</find>
+    </findStrings>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -148,9 +180,9 @@
         <option value="$PROJECT_DIR$/out/production/Vessels_Detector/sample/sample.fxml" />
         <option value="$PROJECT_DIR$/src/sample/Main.java" />
         <option value="$PROJECT_DIR$/src/sample/ModelClassifier.java" />
+        <option value="$PROJECT_DIR$/src/sample/sample.fxml" />
         <option value="$PROJECT_DIR$/src/sample/Menager.java" />
         <option value="$PROJECT_DIR$/src/sample/Controller.java" />
-        <option value="$PROJECT_DIR$/src/sample/sample.fxml" />
         <option value="$PROJECT_DIR$/src/sample/ImageProceed.java" />
       </list>
     </option>
@@ -166,7 +198,7 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds" extendedState="7">
-    <option name="x" value="-7" />
+    <option name="x" value="461" />
     <option name="width" value="974" />
     <option name="height" value="1047" />
   </component>
@@ -179,6 +211,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -215,11 +250,6 @@
             <path>
               <item name="Vessels_Detector" type="b2602c69:ProjectViewProjectNode" />
               <item name="Vessels_Detector" type="462c0819:PsiDirectoryNode" />
-              <item name="Results" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Vessels_Detector" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Vessels_Detector" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -232,9 +262,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="AndroidView" />
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -388,11 +415,12 @@
       <workItem from="1525345168716" duration="711000" />
       <workItem from="1525346642063" duration="766000" />
       <workItem from="1525347498759" duration="793000" />
+      <workItem from="1525431610417" duration="6037000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="90542000" />
+    <option name="totallyTimeSpent" value="96579000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -412,7 +440,7 @@
       <window_info anchor="bottom" id="Terminal" order="14" />
       <window_info id="Capture Tool" order="5" />
       <window_info id="Designer" order="2" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.6703755" visible="true" weight="0.092708334" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.6703755" weight="0.092708334" />
       <window_info anchor="right" id="Database" order="5" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -436,9 +464,10 @@
       <window_info anchor="bottom" id="Application Servers" order="11" />
       <window_info id="Designer" order="2" />
       <window_info anchor="right" id="Palette" order="3" />
-      <window_info id="Image Layers" order="6" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.24442083" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.24123274" />
       <window_info anchor="right" id="JetGradle" order="6" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32943678" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info id="UI Designer" order="3" />
       <window_info anchor="bottom" id="Profiler" order="9" />
@@ -448,15 +477,15 @@
       <window_info anchor="right" id="Capture Analysis" order="7" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Messages" order="15" weight="0.33156216" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Problems" order="10" />
+      <window_info id="Image Layers" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="13" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="12" />
       <window_info anchor="right" id="Maven Projects" order="4" />
       <window_info anchor="bottom" id="Terminal" order="14" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.6703755" visible="true" weight="0.23020834" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.6703755" visible="true" weight="0.092708334" />
       <window_info anchor="right" id="Database" order="5" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -464,7 +493,6 @@
       <window_info anchor="right" id="Theme Preview" order="8" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32943678" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
     </layout-to-restore>
   </component>
@@ -485,20 +513,6 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/sample/Menager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="748">
-          <caret line="44" selection-start-line="44" selection-end-line="44" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#379#380#0" expanded="true" />
-            <element signature="e#438#439#0" expanded="true" />
-            <element signature="e#767#768#0" expanded="true" />
-            <element signature="e#826#827#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/sample/Menager.java">
-      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="629">
           <caret line="44" selection-start-line="44" selection-end-line="44" />
           <folding>
@@ -507,6 +521,10 @@
             <element signature="e#438#439#0" expanded="true" />
             <element signature="e#767#768#0" expanded="true" />
             <element signature="e#826#827#0" expanded="true" />
+            <element signature="e#1164#1165#0" expanded="true" />
+            <element signature="e#1223#1224#0" expanded="true" />
+            <element signature="e#1560#1561#0" expanded="true" />
+            <element signature="e#1619#1620#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -531,6 +549,10 @@
             <element signature="e#438#439#0" expanded="true" />
             <element signature="e#767#768#0" expanded="true" />
             <element signature="e#826#827#0" expanded="true" />
+            <element signature="e#1164#1165#0" expanded="true" />
+            <element signature="e#1223#1224#0" expanded="true" />
+            <element signature="e#1560#1561#0" expanded="true" />
+            <element signature="e#1619#1620#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -541,13 +563,23 @@
           <caret line="204" column="6" selection-start-line="204" selection-start-column="6" selection-end-line="216" selection-end-column="28" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#process#0;class#ImageProceed#0" />
+            <element signature="e#1224#1225#0" expanded="true" />
+            <element signature="e#1261#1262#0" expanded="true" />
+            <element signature="e#1291#1292#0" expanded="true" />
+            <element signature="e#1321#1322#0" expanded="true" />
+            <element signature="e#1356#1357#0" expanded="true" />
+            <element signature="e#1390#1391#0" expanded="true" />
             <element signature="method#changeBright#0;class#ImageProceed#0" />
-            <element signature="method#checkConfusionMartix#0;class#ImageProceed#0" />
-            <element signature="method#checkArr#0;class#ImageProceed#0" />
-            <element signature="method#calculeteStatistic#0;class#ImageProceed#0" />
+            <element signature="e#7810#7811#0" expanded="true" />
+            <element signature="e#7854#7855#0" expanded="true" />
+            <element signature="e#7918#7919#0" expanded="true" />
+            <element signature="e#7951#7952#0" expanded="true" />
             <element signature="method#startSave#0;class#ImageProceed#0" />
             <element signature="method#saveLine#0;class#ImageProceed#0" />
+            <element signature="method#loadDataset#0;class#ImageProceed#0" />
+            <element signature="method#buildClassifier#0;class#ImageProceed#0" />
+            <element signature="method#evaluateModel#0;class#ImageProceed#0" />
+            <element signature="method#saveModel#0;class#ImageProceed#0" />
           </folding>
         </state>
       </provider>
@@ -562,6 +594,10 @@
             <element signature="e#438#439#0" expanded="true" />
             <element signature="e#767#768#0" expanded="true" />
             <element signature="e#826#827#0" expanded="true" />
+            <element signature="e#1164#1165#0" expanded="true" />
+            <element signature="e#1223#1224#0" expanded="true" />
+            <element signature="e#1560#1561#0" expanded="true" />
+            <element signature="e#1619#1620#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -582,13 +618,23 @@
           <caret line="198" selection-start-line="198" selection-end-line="198" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#process#0;class#ImageProceed#0" />
+            <element signature="e#1224#1225#0" expanded="true" />
+            <element signature="e#1261#1262#0" expanded="true" />
+            <element signature="e#1291#1292#0" expanded="true" />
+            <element signature="e#1321#1322#0" expanded="true" />
+            <element signature="e#1356#1357#0" expanded="true" />
+            <element signature="e#1390#1391#0" expanded="true" />
             <element signature="method#changeBright#0;class#ImageProceed#0" />
-            <element signature="method#checkConfusionMartix#0;class#ImageProceed#0" />
-            <element signature="method#checkArr#0;class#ImageProceed#0" />
-            <element signature="method#calculeteStatistic#0;class#ImageProceed#0" />
+            <element signature="e#7810#7811#0" expanded="true" />
+            <element signature="e#7854#7855#0" expanded="true" />
+            <element signature="e#7918#7919#0" expanded="true" />
+            <element signature="e#7951#7952#0" expanded="true" />
             <element signature="method#startSave#0;class#ImageProceed#0" />
             <element signature="method#saveLine#0;class#ImageProceed#0" />
+            <element signature="method#loadDataset#0;class#ImageProceed#0" />
+            <element signature="method#buildClassifier#0;class#ImageProceed#0" />
+            <element signature="method#evaluateModel#0;class#ImageProceed#0" />
+            <element signature="method#saveModel#0;class#ImageProceed#0" />
           </folding>
         </state>
       </provider>
@@ -613,6 +659,10 @@
             <element signature="e#438#439#0" expanded="true" />
             <element signature="e#767#768#0" expanded="true" />
             <element signature="e#826#827#0" expanded="true" />
+            <element signature="e#1164#1165#0" expanded="true" />
+            <element signature="e#1223#1224#0" expanded="true" />
+            <element signature="e#1560#1561#0" expanded="true" />
+            <element signature="e#1619#1620#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -623,13 +673,23 @@
           <caret line="100" lean-forward="true" selection-start-line="100" selection-end-line="100" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#process#0;class#ImageProceed#0" />
+            <element signature="e#1224#1225#0" expanded="true" />
+            <element signature="e#1261#1262#0" expanded="true" />
+            <element signature="e#1291#1292#0" expanded="true" />
+            <element signature="e#1321#1322#0" expanded="true" />
+            <element signature="e#1356#1357#0" expanded="true" />
+            <element signature="e#1390#1391#0" expanded="true" />
             <element signature="method#changeBright#0;class#ImageProceed#0" />
-            <element signature="method#checkConfusionMartix#0;class#ImageProceed#0" />
-            <element signature="method#checkArr#0;class#ImageProceed#0" />
-            <element signature="method#calculeteStatistic#0;class#ImageProceed#0" />
+            <element signature="e#7810#7811#0" expanded="true" />
+            <element signature="e#7854#7855#0" expanded="true" />
+            <element signature="e#7918#7919#0" expanded="true" />
+            <element signature="e#7951#7952#0" expanded="true" />
             <element signature="method#startSave#0;class#ImageProceed#0" />
             <element signature="method#saveLine#0;class#ImageProceed#0" />
+            <element signature="method#loadDataset#0;class#ImageProceed#0" />
+            <element signature="method#buildClassifier#0;class#ImageProceed#0" />
+            <element signature="method#evaluateModel#0;class#ImageProceed#0" />
+            <element signature="method#saveModel#0;class#ImageProceed#0" />
           </folding>
         </state>
       </provider>
@@ -647,13 +707,23 @@
           <caret line="100" column="8" selection-start-line="100" selection-start-column="8" selection-end-line="100" selection-end-column="8" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#process#0;class#ImageProceed#0" />
+            <element signature="e#1224#1225#0" expanded="true" />
+            <element signature="e#1261#1262#0" expanded="true" />
+            <element signature="e#1291#1292#0" expanded="true" />
+            <element signature="e#1321#1322#0" expanded="true" />
+            <element signature="e#1356#1357#0" expanded="true" />
+            <element signature="e#1390#1391#0" expanded="true" />
             <element signature="method#changeBright#0;class#ImageProceed#0" />
-            <element signature="method#checkConfusionMartix#0;class#ImageProceed#0" />
-            <element signature="method#checkArr#0;class#ImageProceed#0" />
-            <element signature="method#calculeteStatistic#0;class#ImageProceed#0" />
+            <element signature="e#7810#7811#0" expanded="true" />
+            <element signature="e#7854#7855#0" expanded="true" />
+            <element signature="e#7918#7919#0" expanded="true" />
+            <element signature="e#7951#7952#0" expanded="true" />
             <element signature="method#startSave#0;class#ImageProceed#0" />
             <element signature="method#saveLine#0;class#ImageProceed#0" />
+            <element signature="method#loadDataset#0;class#ImageProceed#0" />
+            <element signature="method#buildClassifier#0;class#ImageProceed#0" />
+            <element signature="method#evaluateModel#0;class#ImageProceed#0" />
+            <element signature="method#saveModel#0;class#ImageProceed#0" />
           </folding>
         </state>
       </provider>
@@ -878,9 +948,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/sample/Menager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="570">
+          <caret line="48" column="30" selection-start-line="48" selection-start-column="23" selection-end-line="48" selection-end-column="30" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#379#380#0" expanded="true" />
+            <element signature="e#438#439#0" expanded="true" />
+            <element signature="e#767#768#0" expanded="true" />
+            <element signature="e#826#827#0" expanded="true" />
+            <element signature="e#1164#1165#0" expanded="true" />
+            <element signature="e#1223#1224#0" expanded="true" />
+            <element signature="e#1560#1561#0" expanded="true" />
+            <element signature="e#1619#1620#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/sample/ModelClassifier.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1955">
+        <state relative-caret-position="570">
           <caret line="123" column="90" selection-start-line="123" selection-start-column="90" selection-end-line="124" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -890,24 +978,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/sample/Menager.java">
+    <entry file="file://$PROJECT_DIR$/out/production/Vessels_Detector/sample/sample.fxml">
+      <provider editor-type-id="JavaFX-Scene-Builder" />
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="629">
-          <caret line="44" selection-start-line="44" selection-end-line="44" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#379#380#0" expanded="true" />
-            <element signature="e#438#439#0" expanded="true" />
-            <element signature="e#767#768#0" expanded="true" />
-            <element signature="e#826#827#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="136">
+          <caret line="8" selection-end-line="8" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/sample/Controller.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="173" column="33" selection-start-line="173" selection-start-column="26" selection-end-line="173" selection-end-column="33" />
+        <state relative-caret-position="173">
+          <caret line="126" column="74" selection-start-line="126" selection-start-column="64" selection-end-line="126" selection-end-column="74" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -916,17 +998,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/sample/ImageProceed.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="188">
-          <caret line="359" column="66" selection-start-line="359" selection-start-column="66" selection-end-line="359" selection-end-column="66" />
+        <state relative-caret-position="315">
+          <caret line="264" column="17" selection-start-line="264" selection-start-column="17" selection-end-line="264" selection-end-column="17" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="method#process#0;class#ImageProceed#0" />
+            <element signature="e#1224#1225#0" expanded="true" />
+            <element signature="e#1261#1262#0" expanded="true" />
+            <element signature="e#1291#1292#0" expanded="true" />
+            <element signature="e#1321#1322#0" expanded="true" />
+            <element signature="e#1356#1357#0" expanded="true" />
+            <element signature="e#1390#1391#0" expanded="true" />
             <element signature="method#changeBright#0;class#ImageProceed#0" />
-            <element signature="method#checkConfusionMartix#0;class#ImageProceed#0" />
-            <element signature="method#checkArr#0;class#ImageProceed#0" />
-            <element signature="method#calculeteStatistic#0;class#ImageProceed#0" />
+            <element signature="e#7810#7811#0" expanded="true" />
+            <element signature="e#7854#7855#0" expanded="true" />
+            <element signature="e#7918#7919#0" expanded="true" />
+            <element signature="e#7951#7952#0" expanded="true" />
             <element signature="method#startSave#0;class#ImageProceed#0" />
             <element signature="method#saveLine#0;class#ImageProceed#0" />
+            <element signature="method#loadDataset#0;class#ImageProceed#0" />
+            <element signature="method#buildClassifier#0;class#ImageProceed#0" />
+            <element signature="method#evaluateModel#0;class#ImageProceed#0" />
+            <element signature="method#saveModel#0;class#ImageProceed#0" />
           </folding>
         </state>
       </provider>

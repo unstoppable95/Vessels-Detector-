@@ -61,6 +61,7 @@ public class Controller {
     private File fileExpert;
     private File fileResult;
     private File fileResultLearn;
+    private File fileEyeMask;
 
     //make instance files
     private File fileLearnInstance;
@@ -82,10 +83,12 @@ public class Controller {
     public void learnInstance(ActionEvent event){
         fileLearnInstance=Main.openFileChooser();
         fileExpertLearnInstance=Menager.fileExpert(fileLearnInstance);
+        fileEyeMask = Menager.fileEye(fileLearnInstance);
 
         Mat learnImage = Imgcodecs.imread(fileLearnInstance.getPath());
-        ImageProceed myImage = new ImageProceed(learnImage,fileLearnInstance,fileExpertLearnInstance);
-        myImage.makeLearningInstance(myImage.getImageToProceed(), myImage.getImageExpert());
+
+        ImageProceed myImage = new ImageProceed(learnImage,fileLearnInstance,fileExpertLearnInstance,fileEyeMask);
+        myImage.makeLearningInstance(myImage.getImageToProceed(), myImage.getImageExpert(), myImage.getEyeMask());
     }
 
 
@@ -118,7 +121,10 @@ public class Controller {
 
     public void proceed (ActionEvent event){
         Mat image1 = Imgcodecs.imread(fileName.getPath());
-        ImageProceed myImage = new ImageProceed(image1,fileName,fileExpert);
+
+        fileEyeMask = Menager.fileEye(fileName);
+
+        ImageProceed myImage = new ImageProceed(image1,fileName,fileExpert,fileEyeMask);
 
         double [] stat = myImage.process();
 
@@ -138,10 +144,33 @@ public class Controller {
        outFile.setImage(imageGUI);
        labelOut.setText("Obrazek po przetworzeniu");
 
+
+
+        double [] statModel= myImage.makeModel(myImage.getImageToProceed());
+
+
+
+
+        fileResultLearn= Menager.fileLearn(fileName);
+        BufferedImage imageL =null;
+        try {
+            imageL = ImageIO.read(fileResultLearn);
+        }
+        catch (Exception e ){
+            System.out.println("Cos zle poszlo");
+        }
+        Image imageGUILearn= SwingFXUtils.toFXImage(imageL, null);
+
+        //add results to GUI
+        learnFile.setImage(imageGUILearn);
+        labelLearn.setText("Obrazek po WECE");
+
+
         //tableView menagment
         final ObservableList<TableValues> data =
                 FXCollections.observableArrayList(
-                        new TableValues(stat[0],stat[1],stat[2],stat[3])
+                        new TableValues(stat[0],stat[1],stat[2],stat[3]),
+                        new TableValues(statModel[0],statModel[1],statModel[2],statModel[3])
                 );
 
         TableColumn accuracy = new TableColumn("Acc");
@@ -171,24 +200,9 @@ public class Controller {
         parametres.setItems(data);
         parametres.setVisible(true);
 
-        myImage.makeModel(myImage.getImageToProceed());
 
 
 
-
-        fileResultLearn= Menager.fileLearn(fileName);
-        BufferedImage imageL =null;
-        try {
-            imageL = ImageIO.read(fileResultLearn);
-        }
-        catch (Exception e ){
-            System.out.println("Cos zle poszlo");
-        }
-        Image imageGUILearn= SwingFXUtils.toFXImage(imageL, null);
-
-        //add results to GUI
-        learnFile.setImage(imageGUILearn);
-        labelLearn.setText("Obrazek po WECE");
     }
 
 
