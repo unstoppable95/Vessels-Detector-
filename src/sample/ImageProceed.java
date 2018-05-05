@@ -84,10 +84,17 @@ public class ImageProceed {
         int positive=0;
         int negative=0;
         try {
-            PrintWriter out = new PrintWriter(".\\Results\\learnInstance.arff");
+            //PrintWriter out = new PrintWriter(new FileWriter(".\\Results\\learnInstance.arff",true));
+            PrintWriter out;
+            File f = new File(".\\Results\\learnInstance.arff");
+            if(!f.exists()) {
+                out = new PrintWriter(new FileWriter(".\\Results\\learnInstance.arff",true));
+                startSave(out);
+            }
+            else
+                out = new PrintWriter(new FileWriter(".\\Results\\learnInstance.arff",true));
 
-            startSave(out);
-           // System.out.println("I am here 2");
+            // System.out.println("I am here 2");
             for (int i = 0; i < image.rows() - 5; i +=3) {
                 for (int j = 0; j < image.cols() - 5; j+=3) {
                     if (isEye(eyeMask, i, j) == true && isEye(eyeMask, i + 5, j + 5) == true) {
@@ -120,6 +127,8 @@ public class ImageProceed {
                         if (isVessel == 1) positive++;
 
                         if (positive >= negative) {
+
+
                             saveLine(out, mom, hu, avg, cov, isVessel);
                             if (isVessel == 0) negative++;
                         }
@@ -245,15 +254,16 @@ public class ImageProceed {
 
     private double[] calculeteStatistic(Mat imageExpert, Mat image2){
         //Mat eyeMask=Imgcodecs.imread(".\\EyesMasks\\01_h_mask.tif");
-        System.out.println("Ilosc kanalow " + image2.channels());
-
+        System.out.println("Ilosc kanalow obrazka " + image2.channels());
+        System.out.println("Ilosc kanalow maski " + imageExpert.channels());
+        System.out.println("Jestem tu 1");
         double tp=0.0;
         double fn=0.0;
         double fp=0.0;
         double tn=0.0;
 
-        for(int i=0; i<imageExpert.rows(); i++){
-            for(int j=0; j<imageExpert.cols(); j++){
+        for(int i=0; i<imageExpert.rows()-5; i++){
+            for(int j=0; j<imageExpert.cols()-5; j++){
                 if (isEye(eyeMask, i, j) == true) {
                     //checking confusion matrix
                     int channel = (int) image2.get(i, j)[0];
@@ -265,7 +275,7 @@ public class ImageProceed {
                 }
             }
         }
-
+        System.out.println("Jestem tu 2");
         double accuracy = calculateAccuracy(tp,tn,fn,fp); //trafnosc
         double sensitivity = calculateSensitivity(tp,fn); //czulosc
         double specificity = tn/(fp+tn); //swoistosc
@@ -419,7 +429,6 @@ public class ImageProceed {
 
             //Save model
             saveModel(ann, ".\\Results\\model.model");
-            System.out.println("TU JESTEM5");
 
             //classifiy a single instance
             //   ModelClassifier cls = new ModelClassifier();
@@ -431,7 +440,6 @@ public class ImageProceed {
             //         + avg.get(2, 0)[0] + "," + avg.get(3, 0)[0] + "," + avg.get(4, 0)[0] ), filter),".\\Results\\model.model");
             //
 
-            System.out.println("TU JESTEM6");
             System.out.println(image.rows()+"  "+image.cols());
             for (int i = 0; i < image.rows() - 5; i++) {
                 for (int j = 0; j < image.cols() - 5; j++) {
@@ -500,8 +508,8 @@ public class ImageProceed {
                     } else pixel = 0.0;
 
 //                    Mat eyeMask2=Imgcodecs.imread(".\\EyesMasks\\01_h_mask.tif");
-  //                 if(isEye(eyeMask,i,j)==false)
-    //                    pixel=0.0;
+                                     if(isEye(eyeMask,i,j)==false)
+                                        pixel=0.0;
 //                    if (i % 100 == 0 && j % 100 == 0) {
 //                        System.out.println("Values list: " + valuesList);
 //                    }
@@ -516,7 +524,6 @@ public class ImageProceed {
                 }
             }
 
-            System.out.println("TU JESTEM 7");
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             //Mat image2=new Mat();
@@ -532,7 +539,7 @@ public class ImageProceed {
 
 
             Mat afterMedian = new Mat();
-            Imgproc.medianBlur(image2,afterMedian,3);
+            Imgproc.medianBlur(image2,afterMedian,5);
 
             imwrite(fileNAME, afterMedian);
             // System.out.println("Image2: "+image2.);
