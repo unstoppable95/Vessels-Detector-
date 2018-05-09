@@ -7,33 +7,16 @@ import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import weka.*;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.*;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import weka.classifiers.trees.J48;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
-
-
-import weka.core.converters.ArffLoader;
 import weka.core.converters.ConverterUtils.DataSource;
-import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.Normalize;
-
-import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 
 public class ImageProceed {
 
@@ -74,8 +57,6 @@ public class ImageProceed {
     }
 
     public void makeLearningInstance(Mat image1, Mat expertMask,Mat eyeMask){
-        //eyeMask=Imgcodecs.imread(".\\EyesMasks\\01_h_mask.tif");
-        //System.out.println("I am here 1"+eyeMask.get(0,0)[0]);
         List<Mat> lRgb = new ArrayList<Mat>(3);
         Core.split(image1, lRgb);
         Mat image = lRgb.get(1);
@@ -84,7 +65,6 @@ public class ImageProceed {
         int positive=0;
         int negative=0;
         try {
-            //PrintWriter out = new PrintWriter(new FileWriter(".\\Results\\learnInstance.arff",true));
             PrintWriter out;
             File f = new File(".\\Results\\learnInstance.arff");
             if(!f.exists()) {
@@ -94,19 +74,13 @@ public class ImageProceed {
             else
                 out = new PrintWriter(new FileWriter(".\\Results\\learnInstance.arff",true));
 
-            // System.out.println("I am here 2");
             for (int i = 0; i < image.rows() - 5; i +=3) {
                 for (int j = 0; j < image.cols() - 5; j+=3) {
                     if (isEye(eyeMask, i, j) == true && isEye(eyeMask, i + 5, j + 5) == true) {
-                        //System.out.println("I am here 3");
                         //make small 5x5pxl square
                         Mat tmp = Mat.zeros(5, 5, CvType.CV_8U);
                         for (int x = 0; x < 5; x++) {
                             for (int y = 0; y < 5; y++) {
-                                //int npixels = image.total() * image.elemSize();
-                                // byte[] pixels = new byte[npixels];
-                                //image.get(i+x,j+y,pixels);
-                                // Imgproc.CvtColor(source, BlackWhite, Imgproc. ColorBgr2gray);
                                 double[] tmp2 = image.get(i + x, j + y);
                                 tmp.put(x, y, tmp2);
                             }
@@ -116,13 +90,10 @@ public class ImageProceed {
                         Moments mom = Imgproc.moments(tmp);
                         Mat hu = new Mat();
                         Imgproc.HuMoments(mom, hu);
-                        //System.out.println("Central Moments: " +mom.m00 +" "+ mom.m01 +" "+ mom.m02 + " "+mom.m03 +" "+ mom.m10 +" "+ mom.m11 +" "+ mom.m12 +" "+ mom.m20 +" "+ mom.m21 +" "+ mom.m30);
                         //calculate variance
                         Mat avg = Mat.zeros(2, 1, CvType.CV_64FC1);
                         Mat cov = Mat.zeros(2, 2, CvType.CV_64FC1);
                         Core.calcCovarMatrix(tmp, cov, avg, Core.COVAR_COLS);
-                        //System.out.println("\n\nCOVAR: "+cov.dump()+"   MEAN: "+avg.dump());
-                        //System.out.println("Zaczynam zapisywac");
                         int isVessel = checkArr(expertMask.get(i + 2, j + 2));
                         if (isVessel == 1) positive++;
 
@@ -132,7 +103,6 @@ public class ImageProceed {
                             saveLine(out, mom, hu, avg, cov, isVessel);
                             if (isVessel == 0) negative++;
                         }
-                        //if(isVessel==1) System.out.println("True: i= "+i+" j= "+j);
 
                     }
                 }
@@ -143,6 +113,7 @@ public class ImageProceed {
             out.close();
         } catch( Exception e)
         {
+            System.out.print("---Cos poszlo nie tak -> robienie instancji !");
         }
 
 
@@ -195,8 +166,7 @@ public class ImageProceed {
         kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(9, 9));
         Imgproc.dilate(dst, end, kernel);
 
-        //Imgproc.GaussianBlur(dilate, end, new Size(9, 9), 5, 5);
-        //Imgproc.medianBlur(dilate,end,15);
+
 
         //result file save
         String save = ".\\Results\\" + filename.getName().split("\\.")[0] + ".jpg";
@@ -205,8 +175,6 @@ public class ImageProceed {
         double statistic[];
 
         statistic = calculeteStatistic(imageExpert,end);
-
-
 
         return statistic;
 
@@ -253,10 +221,6 @@ public class ImageProceed {
     }
 
     private double[] calculeteStatistic(Mat imageExpert, Mat image2){
-        //Mat eyeMask=Imgcodecs.imread(".\\EyesMasks\\01_h_mask.tif");
-        System.out.println("Ilosc kanalow obrazka " + image2.channels());
-        System.out.println("Ilosc kanalow maski " + imageExpert.channels());
-        System.out.println("Jestem tu 1");
         double tp=0.0;
         double fn=0.0;
         double fp=0.0;
@@ -275,7 +239,6 @@ public class ImageProceed {
                 }
             }
         }
-        System.out.println("Jestem tu 2");
         double accuracy = calculateAccuracy(tp,tn,fn,fp); //trafnosc
         double sensitivity = calculateSensitivity(tp,fn); //czulosc
         double specificity = tn/(fp+tn); //swoistosc
@@ -342,7 +305,6 @@ public class ImageProceed {
                 + avg.get(2, 0)[0] + "," + avg.get(3, 0)[0] + "," + avg.get(4, 0)[0] + "," + isV);
     }
 
-    //////////////////////////////////////////
     public Instances loadDataset(String path) {
         Instances dataset = null;
         try {
@@ -397,50 +359,38 @@ public class ImageProceed {
         Mat image2 =new Mat(image.rows()-4,image.cols()-4,CvType.CV_8U );
 
         Instances dataset = loadDataset(".\\Results\\learnInstance.arff");
-        /////      Filter filter = new Normalize();
+
         dataset.randomize(new Debug.Random(1));
+
         //Normalize dataset
         try {
-            //filter.setInputFormat(dataset);
-            //Instances datasetnor = Filter.useFilter(dataset, filter);
+
             int trainSize = (int) Math.round(dataset.numInstances()*0.8);//0.8
-            ///    int testSize = dataset.numInstances() - trainSize;
-
-            dataset.randomize(new Debug.Random(1));// if you comment this line the accuracy of the model will be droped from 96.6% to 80%
-
-
-            //Normalize dataset
-            /////    filter.setInputFormat(dataset);
-            /////      Instances datasetnor = Filter.useFilter(dataset, filter);
-            // trainSize=10000;////
-            /////  V     Instances traindataset = new Instances(datasetnor, 0, trainSize);
+            dataset.randomize(new Debug.Random(1));
             Instances traindataset = new Instances(dataset, 0, trainSize);
-            ///     Instances testdataset = new Instances(datasetnor, trainSize, testSize);
-            // build classifier with train dataset
-            ///////////////////////////////////////////
-            //MultilayerPerceptron ann = (MultilayerPerceptron) buildClassifier(traindataset); //TU SIE SYPIE
-            MultilayerPerceptron ann = new MultilayerPerceptron();/////////////////////////
-            ann.buildClassifier(traindataset);/////////////////////////
-            ///////////////////////////
-            // Evaluate classifier with test dataset
-            ///      String evalsummary = evaluateModel(ann, traindataset, testdataset);
-            ///      System.out.println("Evaluation: " + evalsummary);
+            MultilayerPerceptron ann = new MultilayerPerceptron();
+            ann.buildClassifier(traindataset);
 
+            //////////////////////////////////////////////////////////////////////////
+
+            //----------------      W A L I D A C J A --------------------------
+
+            ////////////////////////////////////////////////////////////////////
+            //k-fold cross validation
+            //Evaluation evaluation = new Evaluation(dataset);
+            //evaluation.crossValidateModel(ann, dataset, 10, new Random());
+           // System.out.println("=============");
+           // System.out.println(evaluation.toSummaryString("\nResults\n======\n", true));
+           // System.out.println("=============");
+
+            ////////////////////////////////////////////////////////////////////
+            //----------------------------------------------------------------
+            ///////////////////////////////////////////////////////////////////
 
             //Save model
             saveModel(ann, ".\\Results\\model.model");
 
-            //classifiy a single instance
-            //   ModelClassifier cls = new ModelClassifier();
-            //   String classname =cls.classifiy(Filter.useFilter(cls.createInstance(hu.get(0, 0)[0] + "," + hu.get(1, 0)[0] + "," + hu.get(2, 0)[0] + "," + hu.get(3, 0)[0]
-            //            + "," + hu.get(4, 0)[0] + "," + hu.get(5, 0)[0] + "," + hu.get(6, 0)[0] + ","
-            //            + mom.m00 + "," + mom.m01 + "," + mom.m02 + "," + mom.m03 + "," + mom.m10 + "," +
-            //           mom.m11 + "," + mom.m12 + "," + mom.m20 + "," + mom.m21 + " " + mom.m30 + "," +
-            //          avg.get(0, 0)[0] + "," + avg.get(1, 0)[0] + ","
-            //         + avg.get(2, 0)[0] + "," + avg.get(3, 0)[0] + "," + avg.get(4, 0)[0] ), filter),".\\Results\\model.model");
-            //
-
-            System.out.println(image.rows()+"  "+image.cols());
+            System.out.println("Rozmiar obrazu : " + image.rows()+"  "+image.cols());
             for (int i = 0; i < image.rows() - 5; i++) {
                 for (int j = 0; j < image.cols() - 5; j++) {
 
@@ -460,94 +410,47 @@ public class ImageProceed {
                     Mat avg = Mat.zeros(2, 1, CvType.CV_64FC1);
                     Mat cov = Mat.zeros(2, 2, CvType.CV_64FC1);
                     Core.calcCovarMatrix(tmp, cov, avg, Core.COVAR_COLS);
-                    // System.out.println("c");
-                    //System.out.println("\n\nCOVAR: "+cov.dump()+"   MEAN: "+avg.dump());
-                    //System.out.println("Zaczynam zapisywac");
-                    //try{
                     ModelClassifier cls = new ModelClassifier();
-                    //}
-                    // catch(Exception e)
-                    // {
-                    //    System.out.println("Jestem tu i dupa "+e.getMessage());
-                    // }
-                    // /*
-                    //System.out.println("d");
-
-                    // String classname = cls.classifiy(Filter.useFilter(cls.createInstance(hu.get(0, 0)[0], hu.get(1, 0)[0],
-                    //         hu.get(2, 0)[0], hu.get(3, 0)[0], hu.get(4, 0)[0],
-                    //         hu.get(5, 0)[0], hu.get(6, 0)[0], mom.m00, mom.m01, mom.m02, mom.m03,
-                    //        mom.m10, mom.m11, mom.m12, mom.m20, mom.m21, mom.m30, avg.get(0, 0)[0], avg.get(1, 0)[0],
-                    //        avg.get(2, 0)[0], avg.get(3, 0)[0], avg.get(4, 0)[0]), filter),
-                    //        ".\\Results\\model.model");
-
                     List<Double> valuesList = Arrays.asList(hu.get(0, 0)[0], hu.get(1, 0)[0],
                             hu.get(2, 0)[0], hu.get(3, 0)[0], hu.get(4, 0)[0],
                             hu.get(5, 0)[0], hu.get(6, 0)[0], mom.m00, mom.m01, mom.m02, mom.m03,
                             mom.m10, mom.m11, mom.m12, mom.m20, mom.m21, mom.m30, avg.get(0, 0)[0], avg.get(1, 0)[0],
                             avg.get(2, 0)[0], avg.get(3, 0)[0], avg.get(4, 0)[0]);
 
-                    //Instance instance = new Instance((int) Math.pow(valuesList.size()+ 1));
                     Instance instance = new DenseInstance(valuesList.size() + 1);
                     instance.setDataset(dataset);
                     for (int z = 0; z < valuesList.size(); z++) {
                         instance.setValue(z, valuesList.get(z));
                     }
-//                    System.out.println("xxxxx");
-//                    if(i%100==0 && j%100==0) {
-//                        System.out.println("Instance: "+instance.toString());
-//                    }
-//                    System.out.println("yyyyyy");
 
                     double[] clsLabel = ann.distributionForInstance(instance);
-
                     double pixel;
-                    //System.out.println("Tablica: "+clsLabel[0]+" > "+clsLabel[1]);
                     if (clsLabel[0] > clsLabel[1]) {
                         pixel = 255.0;
                         ileInnychNizZero++;
                     } else pixel = 0.0;
 
-//                    Mat eyeMask2=Imgcodecs.imread(".\\EyesMasks\\01_h_mask.tif");
-                                     if(isEye(eyeMask,i,j)==false)
-                                        pixel=0.0;
-//                    if (i % 100 == 0 && j % 100 == 0) {
-//                        System.out.println("Values list: " + valuesList);
-//                    }
 
-//                    double[] pixelsToAdd = new double[3];
-//                    pixelsToAdd[0]=pixel;
-//                    pixelsToAdd[1]=pixel;
-//                    pixelsToAdd[2]=pixel;
+                    if(isEye(eyeMask,i,j)==false)
+                        pixel=0.0;
+
                     double pixelsToAdd = pixel;
                     image2.put(i, j, pixelsToAdd);
 
                 }
             }
 
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            //Mat image2=new Mat();
-
-            //Imgproc.cvtColor(image,image2,CvType.CV_8UC3);
             System.out.println("Channels image: "+image2.channels());
             System.out.println("Channels image 1: "+image2.get(100,1000)[0]);
-
             System.out.println("Ile innych niz 0: "+ileInnychNizZero);
 
             String fileNAME = ".\\Results\\LEARN" + filename.getName().split("\\.")[0]+".jpg";
             System.out.println(fileNAME);
-
-
             Mat afterMedian = new Mat();
-            Imgproc.medianBlur(image2,afterMedian,5);
+            Imgproc.medianBlur(image2,afterMedian,7);
 
             imwrite(fileNAME, afterMedian);
-            // System.out.println("Image2: "+image2.);
-
-
             statistic = calculeteStatistic(imageExpert,afterMedian);
-
-
             System.out.println("!!!!ZAPISANE!!!!");
 
         }catch(Exception e){
@@ -560,6 +463,5 @@ public class ImageProceed {
         return  statistic;
     }
 
-    ///////////////////////////////////
 
 }
